@@ -21,7 +21,9 @@
 
 #include <sys/utsname.h>
 #ifndef __APPLE__
+#ifdef SYNERGY_HAVE_QT_DBUS
 #include <QtDBus>
+#endif
 #endif
 
 //
@@ -84,6 +86,7 @@ ArchSystemUnix::getLibsUsed(void) const
 }
 
 #ifndef __APPLE__
+#ifdef SYNERGY_HAVE_QT_DBUS
 bool
 ArchSystemUnix::DBusInhibitScreenCall(InhibitScreenServices serviceID, bool state, std::string& error)
 {
@@ -154,4 +157,12 @@ ArchSystemUnix::DBusInhibitScreenCall(InhibitScreenServices serviceID, bool stat
 
     return true;
 }
+#else
+bool
+ArchSystemUnix::DBusInhibitScreenCall(InhibitScreenServices serviceID, bool state, std::string& error)
+{
+    error = "QtDBus not available";
+    return false;
+}
+#endif
 #endif

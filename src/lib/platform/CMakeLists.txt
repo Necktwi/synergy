@@ -43,8 +43,11 @@ if (UNIX)
     target_link_libraries(platform io net ipc synlib client ${libs})
 
     if (NOT APPLE)
-        find_package (Qt5 COMPONENTS DBus)
-        target_link_libraries (platform Qt5::DBus)
+        find_package (Qt5 COMPONENTS DBus OPTIONAL)
+        if(Qt5DBus_FOUND)
+            target_link_libraries (platform Qt5::DBus)
+            target_compile_definitions(platform PRIVATE SYNERGY_HAVE_QT_DBUS)
+        endif()
     endif()
 endif()
 

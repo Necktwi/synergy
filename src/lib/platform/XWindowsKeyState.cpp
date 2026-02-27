@@ -17,7 +17,9 @@
  */
 
 #ifndef __APPLE__
+#ifdef SYNERGY_HAVE_QT_DBUS
 #include <QtDBus>
+#endif
 #endif
 
 #include "platform/XWindowsKeyState.h"
@@ -249,6 +251,7 @@ XWindowsKeyState::getKeyMap(synergy::KeyMap& keyMap)
     updateKeysymMap(keyMap);
 }
 
+#ifdef SYNERGY_HAVE_QT_DBUS
 bool XWindowsKeyState::setCurrentLanguageWithDBus(SInt32 group) const
 {
     QString service = "org.gnome.Shell";
@@ -291,6 +294,7 @@ bool XWindowsKeyState::setCurrentLanguageWithDBus(SInt32 group) const
 
     return true;
 }
+#endif
 
 void
 XWindowsKeyState::fakeKey(const Keystroke& keystroke)
@@ -324,9 +328,11 @@ XWindowsKeyState::fakeKey(const Keystroke& keystroke)
             LOG((CLOG_WARN "LANGUAGE_DEBUG  group %d", keystroke.m_data.m_group.m_group));
 
 #ifndef __APPLE__
+#ifdef SYNERGY_HAVE_QT_DBUS
             if(setCurrentLanguageWithDBus(keystroke.m_data.m_group.m_group)) {
                 break;
             }
+#endif
 #endif
 #if HAVE_XKB_EXTENSION
             if (m_xkb != NULL) {
@@ -345,9 +351,11 @@ XWindowsKeyState::fakeKey(const Keystroke& keystroke)
             LOG((CLOG_WARN "LANGUAGE_DEBUG  group %+d", keystroke.m_data.m_group.m_group));
 
 #ifndef __APPLE__
+#ifdef SYNERGY_HAVE_QT_DBUS
             if(setCurrentLanguageWithDBus(keystroke.m_data.m_group.m_group)) {
                 break;
             }
+#endif
 #endif
 #if HAVE_XKB_EXTENSION
             if (m_xkb != NULL) {

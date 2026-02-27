@@ -127,7 +127,9 @@ private:
     /*!
     Returns the existance of nedeed DBus interface.
     */
+#ifdef SYNERGY_HAVE_QT_DBUS
     bool                setCurrentLanguageWithDBus(SInt32 group) const;
+#endif
 
     static void            remapKeyModifiers(KeyID, SInt32,
                             synergy::KeyMap::KeyItem&, void*);
