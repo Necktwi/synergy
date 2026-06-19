@@ -26,6 +26,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <cstdint>
 
 // -----------------------------------------------------------------------------
 // Input Filter Condition Classes

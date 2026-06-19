@@ -26,6 +26,7 @@
 #include "base/Log.h"
 #include "base/Path.h"
 
+#ifdef WITH_SSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <cstring>
@@ -767,3 +768,99 @@ SecureSocket::handleTCPConnected(const Event&, void*)
     }
     secureConnect();
 }
+
+#else // WITH_SSL
+
+SecureSocket::SecureSocket(IEventQueue* events, SocketMultiplexer* socketMultiplexer, IArchNetwork::EAddressFamily family) :
+    TCPSocket(events, socketMultiplexer, family),
+    m_ssl(nullptr),
+    m_secureReady(false),
+    m_fatal(true)
+{
+}
+
+SecureSocket::SecureSocket(IEventQueue* events, SocketMultiplexer* socketMultiplexer, ArchSocket socket) :
+    TCPSocket(events, socketMultiplexer, socket),
+    m_ssl(nullptr),
+    m_secureReady(false),
+    m_fatal(true)
+{
+}
+
+SecureSocket::~SecureSocket()
+{
+}
+
+void SecureSocket::close()
+{
+    TCPSocket::close();
+}
+
+void SecureSocket::connect(const NetworkAddress& addr)
+{
+    TCPSocket::connect(addr);
+}
+
+ISocketMultiplexerJob* SecureSocket::newJob()
+{
+    return nullptr;
+}
+
+bool SecureSocket::isSecureReady()
+{
+    return false;
+}
+
+void SecureSocket::secureConnect()
+{
+}
+
+void SecureSocket::secureAccept()
+{
+}
+
+int SecureSocket::secureRead(void* buffer, int size, int& read)
+{
+    return -1;
+}
+
+int SecureSocket::secureWrite(const void* buffer, int size, int& wrote)
+{
+    return -1;
+}
+
+TCPSocket::EJobResult SecureSocket::doRead()
+{
+    return TCPSocket::EJobResult::kBreak;
+}
+
+TCPSocket::EJobResult SecureSocket::doWrite()
+{
+    return TCPSocket::EJobResult::kBreak;
+}
+
+void SecureSocket::initSsl(bool server)
+{
+    LOG((CLOG_ERR "SSL support is disabled in this build"));
+}
+
+bool SecureSocket::loadCertificates(String& CertFile)
+{
+    return false;
+}
+
+void SecureSocket::initContext(bool server) {}
+void SecureSocket::createSSL() {}
+void SecureSocket::freeSSL() {}
+int SecureSocket::secureAccept(int s) { return -1; }
+int SecureSocket::secureConnect(int s) { return -1; }
+bool SecureSocket::showCertificate() const { return false; }
+void SecureSocket::checkResult(int n, int& retry) {}
+void SecureSocket::disconnect() {}
+void SecureSocket::formatFingerprint(String& fingerprint, bool hex, bool separator) {}
+bool SecureSocket::verifyCertFingerprint() { return false; }
+ISocketMultiplexerJob* SecureSocket::serviceConnect(ISocketMultiplexerJob*, bool, bool, bool) { return nullptr; }
+ISocketMultiplexerJob* SecureSocket::serviceAccept(ISocketMultiplexerJob*, bool, bool, bool) { return nullptr; }
+void SecureSocket::handleTCPConnected(const Event& event, void*) {}
+
+#endif // WITH_SSL

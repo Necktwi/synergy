@@ -16,7 +16,11 @@
  */
 #pragma once
 #include <string>
+#ifdef WITH_SSL
 #include <openssl/ssl.h>
+#else
+typedef void SSL;
+#endif
 
 class SslLogger
 {

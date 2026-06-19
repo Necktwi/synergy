@@ -6,6 +6,8 @@
 
 #include <base/Log.h>
 #include <base/Path.h>
+
+#ifdef WITH_SSL
 #include <openssl/err.h>
 
 namespace synergy {
@@ -258,3 +260,34 @@ bool SslApi::isCertificateExists(const std::string &filename) const
 
 } //namespace ssl
 } //namespace synergy
+
+#else // WITH_SSL
+
+namespace synergy {
+namespace ssl {
+
+SslApi::SslApi(bool isServer) {}
+SslApi::~SslApi() {}
+
+int SslApi::read(char* buffer, int size) { return 0; }
+int SslApi::write(const char* buffer, int size) { return 0; }
+int SslApi::accept(int socket) { return 0; }
+int SslApi::connect(int socket) { return 0; }
+
+bool SslApi::loadCertificate(const std::string& filename) { return false; }
+bool SslApi::showCertificate() const { return false; }
+std::string SslApi::getFingerprint() const { return ""; }
+bool SslApi::isTrustedFingerprint(const std::string& fingerprint) const { return false; }
+
+void SslApi::logSecureInfo() const {}
+int SslApi::getErrorCode(int status) const { return 0; }
+
+void SslApi::createSSL() {}
+void SslApi::formatFingerprint(std::string& fingerprint) const {}
+bool SslApi::isCertificateExists(const std::string& filename) const { return false; }
+void SslApi::createContext(bool isServer) {}
+
+} //namespace ssl
+} //namespace synergy
+
+#endif // WITH_SSL

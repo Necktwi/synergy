@@ -29,6 +29,7 @@
 #include <mt/Lock.h>
 #include <arch/XArch.h>
 
+#ifdef WITH_SSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
@@ -490,3 +491,79 @@ SecureClientSocket::handleTCPConnected(const Event&, void*)
         LOG((CLOG_DEBUG "disregarding stale connect event"));
     }
 }
+
+#else // WITH_SSL
+
+SecureClientSocket::SecureClientSocket(IEventQueue* events, SocketMultiplexer* socketMultiplexer, IArchNetwork::EAddressFamily family) :
+    InverseClientSocket(events, socketMultiplexer, family)
+{
+}
+
+void SecureClientSocket::connect(const NetworkAddress& addr)
+{
+    InverseClientSocket::connect(addr);
+}
+
+ISocketMultiplexerJob* SecureClientSocket::newJob()
+{
+    return nullptr;
+}
+
+void SecureClientSocket::setFatal(int code)
+{
+    m_fatal = true;
+}
+
+int SecureClientSocket::getRetry(int errorCode, int retry) const
+{
+    return 0;
+}
+
+bool SecureClientSocket::isSecureReady() const
+{
+    return false;
+}
+
+void SecureClientSocket::secureConnect()
+{
+}
+
+void SecureClientSocket::secureAccept()
+{
+}
+
+int SecureClientSocket::secureRead(void* buffer, int size, int& read)
+{
+    return -1;
+}
+
+int SecureClientSocket::secureWrite(const void* buffer, int size, int& wrote)
+{
+    return -1;
+}
+
+InverseClientSocket::EJobResult SecureClientSocket::doRead()
+{
+    return InverseClientSocket::EJobResult::kBreak;
+}
+
+InverseClientSocket::EJobResult SecureClientSocket::doWrite()
+{
+    return InverseClientSocket::EJobResult::kBreak;
+}
+
+bool SecureClientSocket::loadCertificates(const std::string& CertFile)
+{
+    return false;
+}
+
+void SecureClientSocket::initContext(bool server) {}
+int SecureClientSocket::secureAccept(int s) { return -1; }
+int SecureClientSocket::secureConnect(int s) { return -1; }
+void SecureClientSocket::checkResult(int n, int& retry) {}
+void SecureClientSocket::disconnect() {}
+ISocketMultiplexerJob* SecureClientSocket::serviceConnect(ISocketMultiplexerJob*, bool, bool, bool) { return nullptr; }
+ISocketMultiplexerJob* SecureClientSocket::serviceAccept(ISocketMultiplexerJob*, bool, bool, bool) { return nullptr; }
+void SecureClientSocket::handleTCPConnected(const Event& event, void*) {}
+
+#endif // WITH_SSL

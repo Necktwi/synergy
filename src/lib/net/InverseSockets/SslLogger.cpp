@@ -19,6 +19,8 @@
 #include <iterator>
 
 #include <base/Log.h>
+
+#ifdef WITH_SSL
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 
@@ -185,3 +187,13 @@ void SslLogger::logErrorByCode(int code, int retry)
             break;
     }
 }
+
+#else // WITH_SSL
+
+void SslLogger::logSecureLibInfo() {}
+void SslLogger::logSecureCipherInfo(const SSL* ssl) {}
+void SslLogger::logSecureConnectInfo(const SSL* ssl) {}
+void SslLogger::logError(const std::string& reason) {}
+void SslLogger::logErrorByCode(int code, int retry) {}
+
+#endif // WITH_SSL

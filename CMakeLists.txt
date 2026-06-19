@@ -336,13 +336,18 @@ endif()
 #
 # OpenSSL
 #
-# Apple has to use static libraries because
-# "Use of the Apple-provided OpenSSL libraries by apps is strongly discouraged."
-# https://developer.apple.com/library/archive/documentation/Security/Conceptual/cryptoservices/SecureNetworkCommunicationAPIs/SecureNetworkCommunicationAPIs.html
-if(APPLE OR DEFINED ENV{SYNERGY_STATIC_OPENSSL})
-    set(OPENSSL_USE_STATIC_LIBS TRUE)
+option (WITH_SSL "Build with SSL support" ON)
+
+if (WITH_SSL)
+    # Apple has to use static libraries because
+    # "Use of the Apple-provided OpenSSL libraries by apps is strongly discouraged."
+    # https://developer.apple.com/library/archive/documentation/Security/Conceptual/cryptoservices/SecureNetworkCommunicationAPIs/SecureNetworkCommunicationAPIs.html
+    if(APPLE OR DEFINED ENV{SYNERGY_STATIC_OPENSSL})
+        set(OPENSSL_USE_STATIC_LIBS TRUE)
+    endif()
+    find_package(OpenSSL REQUIRED)
+    add_definitions(-DWITH_SSL)
 endif()
-find_package(OpenSSL REQUIRED)
 
 #
 # Check submodules

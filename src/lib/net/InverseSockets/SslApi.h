@@ -16,7 +16,12 @@
  */
 #pragma once
 #include <string>
+#ifdef WITH_SSL
 #include <openssl/ssl.h>
+#else
+typedef void SSL;
+typedef void SSL_CTX;
+#endif
 
 namespace synergy {
 namespace ssl {

@@ -28,9 +28,13 @@ if (SYNERGY_ADD_HEADERS)
 endif()
 
 add_library(net STATIC ${sources})
+if (WITH_SSL)
+    target_link_libraries(net
+        PUBLIC
+            OpenSSL::SSL
+    )
+endif()
 target_link_libraries(net
-    PUBLIC
-        OpenSSL::SSL
     PRIVATE
         mt
         io
